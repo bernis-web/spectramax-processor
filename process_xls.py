@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-SpectraMax .xls 原始数据 → 整理格式 xlsx 转换脚本
+SpectraMax .xls/.txt 原始数据 → 整理格式 xlsx 转换脚本
 
-用法:
-    python process_xls.py <输入文件.xls> [选项]
+最简单用法:
+    双击 easy_process.bat，或把 .xls/.txt 原始文件拖到 easy_process.bat 上。
+
+命令行用法:
+    python process_xls.py <输入文件.xls或txt> [选项]
 
 选项:
-    --output-dir DIR      输出目录（默认: ./output）
+    --output-dir DIR      输出目录（默认: E:\test）
     --names N1 [N2 ...]   各 Block 的输出文件名（不含 .xlsx 后缀）
                           若不指定，则使用 Block 原始板名
     --plate-names P1 P2 P3 P4  四个子板的行标签（默认: P1 P2 P3 P4）
 
 示例:
     python process_xls.py 原始数据.xls
-    python process_xls.py 原始数据.xls --output-dir ./results
+    python process_xls.py 原始数据.txt --output-dir E:\test
     python process_xls.py 原始数据.xls --names V1H1 V1S2 H2S1 0.5um 5nm 0.05nm
 """
 
@@ -115,7 +118,7 @@ def build_dataframe(block: dict, plate_labels=None):
     """
     将单个 Block 的数据重组为整理格式 DataFrame。
 
-    输出格式（67 行 × 25 列）：
+    输出格式（66 行 × 25 列）：
       行 0:   NaN, 560/585×6, NaN, 560/595×6, 560/605×6, 560/615×6
       行 1:   NaN, IA..IF×4组
       行 2-17:   P1 + 6列×4波长
@@ -162,7 +165,7 @@ def build_dataframe(block: dict, plate_labels=None):
 def write_xlsx(df: pd.DataFrame, output_path: str):
     """
     将 DataFrame 写入 xlsx（含两行表头格式）。
-    df 预期 67 行 × 25 列。
+    df 预期 66 行 × 25 列。
     """
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -181,11 +184,11 @@ def write_xlsx(df: pd.DataFrame, output_path: str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="将 SpectraMax .xls 原始数据转换为整理格式 xlsx",
+        description="将 SpectraMax .xls/.txt 原始数据转换为整理格式 xlsx",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__
     )
-    parser.add_argument("input_file", help="输入 .xls 文件路径")
+    parser.add_argument("input_file", help="输入 .xls/.txt 文件路径")
     parser.add_argument(
         "--output-dir", default="E:\\test",
         help="输出目录（默认: E:\\test）"
